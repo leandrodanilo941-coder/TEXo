@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Organizador de Serviços</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form, .service {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button.delete {
+      background: #dc3545;
+      margin-top: 5px;
+    }
+    a {
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📋 Organizador de Serviços</h1>
+
+<form id="serviceForm">
+  <input type="text" id="name" placeholder="Nome do serviço" required>
+  <input type="number" id="price" placeholder="Preço (R$)" required>
+  <label>Data de início</label>
+  <input type="date" id="startDate" required>
+  <label>Prazo / Entrega</label>
+  <input type="date" id="endDate" required>
+  <input type="url" id="contract" placeholder="Link do contrato (opcional)">
+  <textarea id="notes" placeholder="Observações"></textarea>
+  <button type="submit">Salvar Serviço</button>
+</form>
+
+<div id="services"></div>
+
+<script>
+  let services = JSON.parse(localStorage.getItem("services")) || [];
+
+  const form = document.getElementById("serviceForm");
+  const servicesDiv = document.getElementById("services");
+
+  function renderServices() {
+    servicesDiv.innerHTML = "";
+    services.forEach((s, index) => {
+      servicesDiv.innerHTML += `
+        <div class="service">
+          <strong>${s.name}</strong><br>
+          💰 Preço: R$ ${s.price}<br>
+          📅 Início: ${s.startDate}<br>
+          ⏰ Entrega: ${s.endDate}<br>
+          ${s.contract ? `📄 <a href="${s.contract}" target="_blank">Contrato</a><br>` : ""}
+          📝 ${s.notes || "Sem observações"}
+          <button class="delete" onclick="deleteService(${index})">Excluir</button>
+        </div>
+      `;
+    });
+  }
+
+  function deleteService(index) {
+    services.splice(index, 1);
+    localStorage.setItem("services", JSON.stringify(services));
+    renderServices();
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const service = {
+      name: name.value,
+      price: price.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
+      contract: contract.value,
+      notes: notes.value
+    };
+    services.push(service);
+    localStorage.setItem("services", JSON.stringify(services));
+    form.reset();
+    renderServices();
+  });
+
+  renderServices();
+</script>
+
+</body>
+</html>
